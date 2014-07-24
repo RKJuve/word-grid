@@ -19,10 +19,10 @@ if (typeof Array.prototype.reIndexOf === 'undefined') {
 }
 
 
-
-var   fs = require('fs'),
-  	conf = require('nconf')
-  prompt = require('prompt');
+var       fs = require('fs'),
+	  	conf = require('nconf')
+	  prompt = require('prompt'),
+	progress = require('progress');
 
 var wordArray = [], gridArray = [], result = [];
 
@@ -81,13 +81,22 @@ function checkGridSize() {
 
 // solve dat puzzle
 function findWordsInGrid() {
-	var i,j;
+	console.log('--- GRID ---')
+	console.log(gridArray[0][0],gridArray[0][1],gridArray[0][2],gridArray[0][3]);
+	console.log(gridArray[1][0],gridArray[1][1],gridArray[1][2],gridArray[1][3])
+	console.log(gridArray[2][0],gridArray[2][1],gridArray[2][2],gridArray[2][3])
+	console.log(gridArray[3][0],gridArray[3][1],gridArray[3][2],gridArray[3][3])
 
+	var i,j;
+	var bar = new progress('progress:[:bar] :percent  time elapsed: :elapsed secs', {total: 16});
 	for (i = 0; i < 4; i++) {
 		for (j = 0; j < 4; j++) {
 			start([[i,j]])
+			bar.tick();
 		}
 	}
+
+	console.log(JSON.stringify(result));
 }
 
 function start(array) {
@@ -99,7 +108,6 @@ function start(array) {
 	});
 
 	isWord(str);
-
 
 	var regex = new RegExp(str);
 	if (wordArray.reIndexOf(regex) === -1) {
@@ -135,6 +143,21 @@ function start(array) {
 	}
 }
 
+
+
+
+///array prototype mess
+if (typeof Array.prototype.reIndexOf === 'undefined') {
+    Array.prototype.reIndexOf = function (rx) {
+        for (var i in this) {
+            if (this[i].toString().match(rx)) {
+                return i;
+            }
+        }
+        return -1;
+    };
+}
+
 function testArray(array, value) {
 	var ret = 0
 	array.forEach(function(elem) {
@@ -160,9 +183,8 @@ function arraysEqual(a, b) {
 }
 
 function isWord(str) {
-	//console.log(str);
 	if (wordArray.indexOf(str) !== -1 && result.indexOf(str) === -1) {
+		console.log
 		result.push(str);
-		console.log('res', result);
 	}
 }

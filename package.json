@@ -18,6 +18,7 @@
   "homepage": "https://github.com/RKJuve/word-grid",
   "dependencies": {
     "nconf": "^0.6.9",
+    "progress": "^1.1.7",
     "prompt": "^0.2.13"
   }
 }
