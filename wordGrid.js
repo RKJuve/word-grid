@@ -81,11 +81,11 @@ function checkGridSize() {
 
 // solve dat puzzle
 function findWordsInGrid() {
-	console.log('--- GRID ---')
-	console.log(gridArray[0][0],gridArray[0][1],gridArray[0][2],gridArray[0][3]);
-	console.log(gridArray[1][0],gridArray[1][1],gridArray[1][2],gridArray[1][3])
-	console.log(gridArray[2][0],gridArray[2][1],gridArray[2][2],gridArray[2][3])
-	console.log(gridArray[3][0],gridArray[3][1],gridArray[3][2],gridArray[3][3])
+	console.log('\n----- GRID ------')
+	console.log('*   ',gridArray[0][0],gridArray[0][1],gridArray[0][2],gridArray[0][3],'   *');
+	console.log('*   ',gridArray[1][0],gridArray[1][1],gridArray[1][2],gridArray[1][3],'   *')
+	console.log('*   ',gridArray[2][0],gridArray[2][1],gridArray[2][2],gridArray[2][3],'   *')
+	console.log('*   ',gridArray[3][0],gridArray[3][1],gridArray[3][2],gridArray[3][3],'   *\n')
 
 	var i,j;
 	var bar = new progress('progress:[:bar] :percent  time elapsed: :elapsed secs', {total: 16});
@@ -96,7 +96,7 @@ function findWordsInGrid() {
 		}
 	}
 
-	console.log(JSON.stringify(result));
+	console.log('\nWORDS FOUND:\n',JSON.stringify(result),'\n');
 }
 
 function recur(array) {
