@@ -22,7 +22,7 @@ fs.readFile('./dictionary.txt', function(err, data) {
 	checkForWordGrid();
 });
 
-// checks for command
+// checks for --grid flag or prompts user for grid entry
 function checkForWordGrid() {
 	conf.argv();
 	if (conf.get('grid') !== undefined) {
@@ -49,6 +49,7 @@ function checkForWordGrid() {
 	}
 }
 
+//checks that gridArray is 4x4
 function checkGridSize() {
 	if (gridArray.length !== 4) {
 		throw new Error('grid doesnt have four lines!')
@@ -62,6 +63,7 @@ function checkGridSize() {
 	findWordsInGrid();
 }
 
+// solve dat puzzle
 function findWordsInGrid() {
 	console.log(gridArray)
 }
