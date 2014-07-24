@@ -4,9 +4,8 @@ wordGrid.js - Ryan Juve - July 2014
 finds english words present in 4x4 grids of letters
 */
 
-
-
-///array prototype mess
+// array prototype addition
+// like array.indexOf but takes in regex and looks for partial matches
 if (typeof Array.prototype.reIndexOf === 'undefined') {
     Array.prototype.reIndexOf = function (rx) {
         for (var i in this) {
@@ -18,12 +17,13 @@ if (typeof Array.prototype.reIndexOf === 'undefined') {
     };
 }
 
-
+// node require statements
 var       fs = require('fs'),
 	  	conf = require('nconf')
 	  prompt = require('prompt'),
 	progress = require('progress');
 
+// globals
 var wordArray = [], gridArray = [], result = [];
 
 //fs call to grab word list
@@ -91,7 +91,7 @@ function findWordsInGrid() {
 	var bar = new progress('progress:[:bar] :percent  time elapsed: :elapsed secs', {total: 16});
 	for (i = 0; i < 4; i++) {
 		for (j = 0; j < 4; j++) {
-			start([[i,j]])
+			recur([[i,j]])
 			bar.tick();
 		}
 	}
@@ -99,82 +99,70 @@ function findWordsInGrid() {
 	console.log(JSON.stringify(result));
 }
 
-function start(array) {
+function recur(array) {
 	var str = '';
 	var last;
+	//build up word string
 	array.forEach(function(elem) {
 		str += gridArray[elem[0]][elem[1]];
 		last = elem;
 	});
-
+	//check word string
 	isWord(str);
-
+	// check if string is part of a word, return if not 
 	var regex = new RegExp(str);
 	if (wordArray.reIndexOf(regex) === -1) {
 		return;
 	}
 
+	// grab last array indexes for convenience
 	var x = last[0],
 		y = last[1];
 
+	///////check if an extension of the string is possible
 	//if up
 	if ( x - 1 >= 0 && testArray(array, [x - 1, y]) !== -1 ) {
-		var newArray = JSON.parse(JSON.stringify(array))
+		var newArray = JSON.parse(JSON.stringify(array)) //easy deep copy, possibly expensive
 		newArray.push([x-1,y]);
-		start(newArray)
+		recur(newArray);
 	}	
 	//if left
 	if ( y - 1 >= 0 && testArray(array, [x, y - 1]) !== -1 ) {
-		var newArray = JSON.parse(JSON.stringify(array))
+		var newArray = JSON.parse(JSON.stringify(array)) //easy deep copy, possibly expensive
 		newArray.push([x,y-1]);
-		start(newArray)
+		recur(newArray);
 	}
 	//if down
 	if ( x + 1 < 4 && testArray(array, [x + 1 , y]) !== -1 ) {
-		var newArray = JSON.parse(JSON.stringify(array))
+		var newArray = JSON.parse(JSON.stringify(array)) //easy deep copy, possibly expensive
 		newArray.push([x+1,y]);
-		start(newArray)
+		recur(newArray);
 	}
 	//if right
 	if ( y + 1 < 4 && testArray(array, [x, y + 1]) !== -1 ) {
-		var newArray = JSON.parse(JSON.stringify(array))
+		var newArray = JSON.parse(JSON.stringify(array)) //easy deep copy, possibly expensive
 		newArray.push([x,y+1]);
-		start(newArray)
+		recur(newArray);
 	}
 }
 
-
-
-
-///array prototype mess
-if (typeof Array.prototype.reIndexOf === 'undefined') {
-    Array.prototype.reIndexOf = function (rx) {
-        for (var i in this) {
-            if (this[i].toString().match(rx)) {
-                return i;
-            }
-        }
-        return -1;
-    };
-}
-
-function testArray(array, value) {
+// tests if value array is present in testArray
+function testArray(testArray, value) {
 	var ret = 0
-	array.forEach(function(elem) {
+	testArray.forEach(function(elem) {
 		if (arraysEqual(elem,value)) {
-			ret = -1
+			ret = -1;
 		}
 	})
 
 	return ret;
 }
+
+// checks two arrays for equivalency
 function arraysEqual(a, b) {
   if (a === b) return true;
   if (a == null || b == null) return false;
   if (a.length != b.length) return false;
-
-  // If you don't care about the order of the elements inside
-  // the array, you should sort both arrays here.
 
   for (var i = 0; i < a.length; ++i) {
     if (a[i] !== b[i]) return false;
@@ -182,9 +170,9 @@ function arraysEqual(a, b) {
   return true;
 }
 
+//tests if string is a word and if it hasnt already been found, adds it to results
 function isWord(str) {
 	if (wordArray.indexOf(str) !== -1 && result.indexOf(str) === -1) {
-		console.log
 		result.push(str);
 	}
 }
