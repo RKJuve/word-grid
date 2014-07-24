@@ -4,11 +4,27 @@ wordGrid.js - Ryan Juve - July 2014
 finds english words present in 4x4 grids of letters
 */
 
+
+
+///array prototype mess
+if (typeof Array.prototype.reIndexOf === 'undefined') {
+    Array.prototype.reIndexOf = function (rx) {
+        for (var i in this) {
+            if (this[i].toString().match(rx)) {
+                return i;
+            }
+        }
+        return -1;
+    };
+}
+
+
+
 var   fs = require('fs'),
   	conf = require('nconf')
   prompt = require('prompt');
 
-var wordArray = [], gridArray = [];
+var wordArray = [], gridArray = [], result = [];
 
 //fs call to grab word list
 fs.readFile('./dictionary.txt', function(err, data) {
@@ -65,5 +81,88 @@ function checkGridSize() {
 
 // solve dat puzzle
 function findWordsInGrid() {
-	console.log(gridArray)
+	var i,j;
+
+	for (i = 0; i < 4; i++) {
+		for (j = 0; j < 4; j++) {
+			start([[i,j]])
+		}
+	}
+}
+
+function start(array) {
+	var str = '';
+	var last;
+	array.forEach(function(elem) {
+		str += gridArray[elem[0]][elem[1]];
+		last = elem;
+	});
+
+	isWord(str);
+
+
+	var regex = new RegExp(str);
+	if (wordArray.reIndexOf(regex) === -1) {
+		return;
+	}
+
+	var x = last[0],
+		y = last[1];
+
+	//if up
+	if ( x - 1 >= 0 && testArray(array, [x - 1, y]) !== -1 ) {
+		var newArray = JSON.parse(JSON.stringify(array))
+		newArray.push([x-1,y]);
+		start(newArray)
+	}	
+	//if left
+	if ( y - 1 >= 0 && testArray(array, [x, y - 1]) !== -1 ) {
+		var newArray = JSON.parse(JSON.stringify(array))
+		newArray.push([x,y-1]);
+		start(newArray)
+	}
+	//if down
+	if ( x + 1 < 4 && testArray(array, [x + 1 , y]) !== -1 ) {
+		var newArray = JSON.parse(JSON.stringify(array))
+		newArray.push([x+1,y]);
+		start(newArray)
+	}
+	//if right
+	if ( y + 1 < 4 && testArray(array, [x, y + 1]) !== -1 ) {
+		var newArray = JSON.parse(JSON.stringify(array))
+		newArray.push([x,y+1]);
+		start(newArray)
+	}
+}
+
+function testArray(array, value) {
+	var ret = 0
+	array.forEach(function(elem) {
+		if (arraysEqual(elem,value)) {
+			ret = -1
+		}
+	})
+
+	return ret;
+}
+function arraysEqual(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length != b.length) return false;
+
+  // If you don't care about the order of the elements inside
+  // the array, you should sort both arrays here.
+
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
+function isWord(str) {
+	//console.log(str);
+	if (wordArray.indexOf(str) !== -1 && result.indexOf(str) === -1) {
+		result.push(str);
+		console.log('res', result);
+	}
 }
